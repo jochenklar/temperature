@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import subprocess
+import time
+
+INTERVALL = 1
+FORMAT = '%10s'
+LOOP = 10
+COLOR_START = '\033[96m'
+COLOR_END = '\033[0m'
+KEYS = ('Core 0', 'Core 1', 'Core 2', 'Core 3', 'fan1', 'fan2', 'fan3', 'fan4')
+
+def print_keys():
+    print (COLOR_START + FORMAT * len(KEYS) % KEYS + COLOR_END)
+
+def print_data():
+    sensors_output = subprocess.check_output('sensors').decode('utf-8')
+
+    data = []
+    for line in sensors_output.split('\n'):
+        line_split = line.split(':')
+        for key in KEYS:
+            if line_split[0] == key:
+                data.append(line_split[1].split('(')[0].strip())
+    print (FORMAT * len(KEYS) % tuple(data))
+
+while True:
+    print_keys()
+    for i in range(LOOP):
+        print_data()
+        time.sleep(INTERVALL)
