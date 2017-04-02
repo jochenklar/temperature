@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import subprocess
+import time
+
+INTERVALL = 1
+FORMAT = '%10s'
+LOOP = 10
+COLOR_START = '\033[92m'
+COLOR_END = '\033[0m'
+KEYS = ('/dev/sda', '/dev/sdb', '/dev/sdc', '/dev/sdd')
+
+def print_keys():
+    print (COLOR_START + FORMAT * len(KEYS) % KEYS + COLOR_END)
+
+def print_data():
+    data = []
+    for key in KEYS:
+        smartctl_output = subprocess.check_output('smartctl -A %s | grep Temperature' % key, shell=True).decode('utf-8')
+        data.append(smartctl_output.split()[-1] + '°C')
+
+    print (FORMAT * len(KEYS) % tuple(data))
+
+while True:
+    print_keys()
+    for i in range(LOOP):
+        print_data()
+        time.sleep(INTERVALL)
